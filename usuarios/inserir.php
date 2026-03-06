@@ -1,15 +1,17 @@
 <?php
 require_once __DIR__ . '/../config.php';
 
+   
+
 if($_SERVER ['REQUEST_METHOD'] === 'POST') {
 
+    $nome = ($_POST ['nome'] ?? '');
+    $email = ($_POST ['email'] ?? '');
+    $senha = ($_POST ['senha'] ?? '');
 
-    $nome = ($_POST ['nome'] )   ;
-    $email = ($_POST ['email'] );
-    $senha = ($_POST [ 'senha']);
-
-
-    if($nome && $email && $senha) {
+    if (empty($nome) || empty($email) || empty($senha)) {
+        $erro = "Todos os campos são obrigatórios.";
+    } else {
         $sql = "INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)";
         $stmt = $conexao->prepare($sql);
         $stmt->execute([
@@ -17,17 +19,11 @@ if($_SERVER ['REQUEST_METHOD'] === 'POST') {
             ':email' => $email,
             ':senha' => password_hash($senha, PASSWORD_DEFAULT)
         ]);
-
-
         header('Location: ' . BASE_URL . '/usuarios/listar.php');
         exit;
-    } else {
-        echo "<div class='alert alert-danger'>Todos os campos são obrigatórios.</div>";
-    } 
     }
+}
     
-
-
 
 // debugging
 // echo $nome, $email, $senha;
@@ -38,8 +34,6 @@ require_once BASE_PATH . '/includes/cabecalho.php';
 
 <section class="mb-4 border rounded-3 p-4 border-primary-subtle">
     <h3 class="text-center"><i class="bi bi-plus-circle-fill"></i> Adicionar Usuário</h3>
-
-
 
     <form method="post" class="w-75 mx-auto">
         <div class="form-group">
